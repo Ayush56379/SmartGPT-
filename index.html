@@ -3,244 +3,484 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGPT - Next Gen AI</title>
+    <title>SmartGPT - Enterprise UI</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome for Premium Icons -->
+    <!-- FontAwesome Core Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Custom Scrollbar for Premium Feel */
         ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
+            width: 5px;
+            height: 5px;
         }
         ::-webkit-scrollbar-track {
             background: #0f172a;
         }
         ::-webkit-scrollbar-thumb {
             background: #334155;
-            border-radius: 10px;
+            border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
             background: #475569;
         }
-        /* Neon Glow Effect */
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(99, 102, 241, 0.15);
+        .glow-input:focus-within {
+            box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
+        }
+        /* Markdown code block syntax style */
+        pre {
+            background-color: #0f1524;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #334155;
+            font-family: monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+            margin: 0.5rem 0;
         }
     </style>
 </head>
 <body class="bg-[#0b0f19] text-slate-200 font-sans h-screen flex overflow-hidden">
 
+    <!-- BACKDROP FOR MOBILE SIDEBAR -->
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
+
     <!-- SIDEBAR -->
-    <aside class="w-80 bg-[#0f1524] border-r border-slate-800 flex flex-col justify-between p-4 hidden md:flex z-10">
-        <!-- Top Section -->
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-[#0f1524] border-r border-slate-800/80 flex flex-col justify-between p-4 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out z-30">
         <div>
-            <!-- Logo / Name -->
-            <div class="flex items-center gap-3 px-2 py-3 mb-6">
-                <div class="bg-gradient-to-tr from-indigo-500 to-purple-500 p-2 rounded-xl text-white shadow-lg shadow-indigo-500/30">
-                    <i class="fa-solid fa-brain text-xl"></i>
+            <!-- Header Brand -->
+            <div class="flex items-center justify-between px-2 py-3 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-md shadow-indigo-600/20">
+                        <i class="fa-solid fa-brain text-lg"></i>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold tracking-tight text-white">SmartGPT</h1>
+                        <span class="text-[10px] text-indigo-400 font-mono tracking-wider uppercase block -mt-1">Enterprise Platform</span>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-xl font-bold tracking-wide bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">SmartGPT</h1>
-                    <span class="text-xs text-indigo-400 font-medium tracking-widest uppercase">v2.0 Pro</span>
-                </div>
+                <!-- Mobile Close Button -->
+                <button id="closeSidebarBtn" class="md:hidden text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
             </div>
 
-            <!-- New Chat Button -->
-            <button class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white font-medium py-3 px-4 rounded-xl flex items-center justify-between transition-all duration-300 shadow-md shadow-indigo-600/20 mb-6 group">
-                <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-plus text-sm group-hover:rotate-90 transition-transform duration-300"></i>
+            <!-- Action Button -->
+            <button id="newSessionBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 px-4 rounded-xl flex items-center justify-between transition-all duration-200 mb-6 group">
+                <div class="flex items-center gap-2.5">
+                    <i class="fa-solid fa-plus text-xs"></i>
                     <span>New Session</span>
                 </div>
-                <span class="text-xs bg-black/30 px-2 py-1 rounded text-slate-300 font-mono">⌘N</span>
+                <span class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded text-slate-300 font-mono">Ctrl+N</span>
             </button>
 
-            <!-- Chat History List -->
-            <div class="space-y-2">
-                <p class="text-xs font-semibold text-slate-500 px-2 uppercase tracking-wider mb-2">Recent Chats</p>
-                
-                <a href="#" class="flex items-center justify-between p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 text-slate-200 group transition-all">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <i class="fa-regular fa-message text-indigo-400 flex-shrink-0"></i>
-                        <span class="truncate text-sm font-medium">Advanced Data Analytics</span>
-                    </div>
-                    <i class="fa-solid fa-ellipsis text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                </a>
-
-                <a href="#" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/30 text-slate-400 hover:text-slate-200 group transition-all">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <i class="fa-regular fa-message flex-shrink-0"></i>
-                        <span class="truncate text-sm">UI/UX Design Strategy</span>
-                    </div>
-                    <i class="fa-solid fa-ellipsis text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                </a>
-
-                <a href="#" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/30 text-slate-400 hover:text-slate-200 group transition-all">
-                    <div class="flex items-center gap-3 overflow-hidden">
-                        <i class="fa-regular fa-message flex-shrink-0"></i>
-                        <span class="truncate text-sm">Automated Script Logic</span>
-                    </div>
-                    <i class="fa-solid fa-ellipsis text-xs text-slate-500 opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                </a>
+            <!-- Chat Navigation Management -->
+            <div class="space-y-1">
+                <p class="text-[11px] font-semibold text-slate-500 px-2 uppercase tracking-wider mb-2">History</p>
+                <div id="historyContainer" class="space-y-1">
+                    <!-- Dynamic rendering elements or active layouts -->
+                    <button class="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/40 text-slate-200 text-left text-sm transition-all history-item">
+                        <div class="flex items-center gap-3 truncate">
+                            <i class="fa-regular fa-message text-indigo-400 text-xs flex-shrink-0"></i>
+                            <span class="truncate">Advanced Data Analytics</span>
+                        </div>
+                    </button>
+                    <button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-800/30 text-slate-400 hover:text-slate-200 text-left text-sm transition-all history-item">
+                        <div class="flex items-center gap-3 truncate">
+                            <i class="fa-regular fa-message text-xs flex-shrink-0"></i>
+                            <span class="truncate">UI/UX Design Architecture</span>
+                        </div>
+                    </button>
+                    <button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-800/30 text-slate-400 hover:text-slate-200 text-left text-sm transition-all history-item">
+                        <div class="flex items-center gap-3 truncate">
+                            <i class="fa-regular fa-message text-xs flex-shrink-0"></i>
+                            <span class="truncate">Automated Script Logic</span>
+                        </div>
+                    </button>
+                </div>
             </div>
         </div>
 
-        <!-- Bottom Section (User Profile) -->
-        <div class="border-t border-slate-800 pt-4">
-            <div class="flex items-center justify-between p-2 rounded-xl hover:bg-slate-800/40 transition-all cursor-pointer">
+        <!-- Account Interface Component -->
+        <div class="border-t border-slate-800/80 pt-4">
+            <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-800/40 transition-all">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center font-bold text-white text-sm shadow-md">
+                    <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs">
                         AP
                     </div>
                     <div>
-                        <p class="text-sm font-semibold text-slate-200">Ayush Prajapati</p>
-                        <p class="text-xs text-emerald-400 font-medium flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full inline-block animate-pulse"></span> Premium Plus
+                        <p class="text-xs font-semibold text-slate-200">Ayush Prajapati</p>
+                        <p class="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
+                            <span class="w-1 h-1 bg-emerald-400 rounded-full inline-block"></span> Active Tier
                         </p>
                     </div>
                 </div>
-                <i class="fa-solid fa-gear text-slate-500 hover:text-slate-300 transition-colors"></i>
+                <button id="settingsBtn" class="text-slate-500 hover:text-slate-300 p-1.5" title="Settings">
+                    <i class="fa-solid fa-sliders text-sm"></i>
+                </button>
             </div>
         </div>
     </aside>
 
-    <!-- MAIN CHAT AREA -->
-    <main class="flex-1 flex flex-col h-full bg-[#0b0f19] relative">
+    <!-- MAIN INTERACTION INTERFACE -->
+    <main class="flex-1 flex flex-col h-full bg-[#0b0f19] relative overflow-hidden">
         
-        <!-- Header -->
-        <header class="h-16 border-b border-slate-800/60 flex items-center justify-between px-6 bg-[#0b0f19]/80 backdrop-blur-md sticky top-0 z-10">
+        <!-- Navbar Control Header -->
+        <header class="h-14 border-b border-slate-800/60 flex items-center justify-between px-6 bg-[#0b0f19] z-10">
             <div class="flex items-center gap-4">
-                <!-- Mobile Menu Button -->
-                <button class="md:hidden text-slate-400 hover:text-white text-xl">
-                    <i class="fa-solid fa-bars"></i>
+                <button id="menuToggleBtn" class="md:hidden text-slate-400 hover:text-white text-base">
+                    <i class="fa-solid fa-bars-staggered"></i>
                 </button>
                 <div class="flex items-center gap-2">
-                    <span class="text-sm font-semibold text-slate-200">SmartGPT-4o</span>
-                    <span class="text-[10px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded-full font-medium">Hyper-Fast</span>
+                    <span class="text-xs font-semibold tracking-wide text-slate-300">Model: SmartGPT-4o</span>
+                    <span class="text-[9px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-mono">Standard Endpoint</span>
                 </div>
             </div>
             
-            <div class="flex items-center gap-4">
-                <button class="text-slate-400 hover:text-slate-200 text-sm border border-slate-800 rounded-xl px-3 py-1.5 flex items-center gap-2 bg-[#0f1524]">
-                    <i class="fa-solid fa-bolt text-amber-400"></i> Upgrade
+            <div class="flex items-center gap-3">
+                <button id="clearWorkspaceBtn" class="text-slate-400 hover:text-slate-200 text-xs border border-slate-800 rounded-lg px-2.5 py-1.5 bg-[#0f1524] transition-all">
+                    Clear Terminal
                 </button>
-                <div class="w-8 h-8 rounded-full bg-slate-800 flex items-center justify-center border border-slate-700 text-slate-300 text-sm">
-                    <i class="fa-regular fa-bell"></i>
-                </div>
             </div>
         </header>
 
-        <!-- Dynamic Content Panel -->
-        <div class="flex-1 overflow-y-auto p-6 md:p-12 space-y-8 max-w-4xl w-full mx-auto flex flex-col justify-between">
+        <!-- Container Workspace Area -->
+        <div id="workspaceArea" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 max-w-4xl w-full mx-auto flex flex-col">
             
-            <!-- Dashboard Welcome View (Agar chat shuru nahi hui to yeh dikhega) -->
-            <div class="my-auto text-center space-y-6 py-8">
-                <div class="inline-flex bg-gradient-to-tr from-indigo-600/10 to-purple-600/10 border border-indigo-500/20 p-4 rounded-3xl text-indigo-400 text-4xl mb-2 neon-glow">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                </div>
+            <!-- Default Welcome Display Panel -->
+            <div id="welcomeScreen" class="my-auto text-center space-y-6 py-4">
                 <div class="space-y-2">
-                    <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight text-white">How can SmartGPT assist you today?</h2>
-                    <p class="text-slate-400 text-sm md:text-base max-w-md mx-auto">Experience elite-level computational logic, data transformation, and creative architectures.</p>
+                    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-white">SmartGPT Technical Interface</h2>
+                    <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto">Select a system execution query or deploy specialized production templates below.</p>
                 </div>
 
-                <!-- Suggestion Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto pt-6">
-                    <div class="p-4 rounded-2xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-300 hover:-translate-y-1 group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-table text-emerald-400"></i>
-                            <h3 class="font-semibold text-sm text-slate-200 group-hover:text-indigo-400 transition-colors">Analyze Data</h3>
+                <!-- Strategic Quick Templates -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto pt-4">
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Analyze the following raw dataset for pipeline compatibility:">
+                        <div class="flex items-center gap-2.5 mb-1.5">
+                            <i class="fa-solid fa-database text-indigo-400 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-200">Data Transformations</h3>
                         </div>
-                        <p class="text-xs text-slate-400 line-clamp-2">Clean, format and transform raw datasets into clean automated pipelines.</p>
+                        <p class="text-[11px] text-slate-400">Process and cleanse structural datasets for spreadsheet integration modules.</p>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-300 hover:-translate-y-1 group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-code text-blue-400"></i>
-                            <h3 class="font-semibold text-sm text-slate-200 group-hover:text-indigo-400 transition-colors">Google Apps Script</h3>
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Write an optimized Google Apps Script to synchronize Google Drive files:">
+                        <div class="flex items-center gap-2.5 mb-1.5">
+                            <i class="fa-solid fa-code text-indigo-400 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-200">Google Apps Script Modules</h3>
                         </div>
-                        <p class="text-xs text-slate-400 line-clamp-2">Build a lean backend using Google Drive API and automate automation triggers.</p>
+                        <p class="text-[11px] text-slate-400">Deploy clean operational scripts using native storage endpoint integrations.</p>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-300 hover:-translate-y-1 group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-pen-nib text-purple-400"></i>
-                            <h3 class="font-semibold text-sm text-slate-200 group-hover:text-indigo-400 transition-colors">Ebook Formatting</h3>
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Optimize the typography hierarchy and structure layout for:">
+                        <div class="flex items-center gap-2.5 mb-1.5">
+                            <i class="fa-solid fa-file-invoice text-indigo-400 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-200">Ebook Structural Formats</h3>
                         </div>
-                        <p class="text-xs text-slate-400 line-clamp-2">Structure professional layouts for high-conversion publishing guides.</p>
+                        <p class="text-[11px] text-slate-400">Apply formal structural standard rules to digital content distribution copies.</p>
                     </div>
 
-                    <div class="p-4 rounded-2xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-300 hover:-translate-y-1 group">
-                        <div class="flex items-center gap-3 mb-2">
-                            <i class="fa-solid fa-bolt text-amber-400"></i>
-                            <h3 class="font-semibold text-sm text-slate-200 group-hover:text-indigo-400 transition-colors">Optimize Workflow</h3>
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Create a script template to map PDF fields to Excel rows automatically.">
+                        <div class="flex items-center gap-2.5 mb-1.5">
+                            <i class="fa-solid fa-microchip text-indigo-400 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-200">Spreadsheet Conversion Logic</h3>
                         </div>
-                        <p class="text-xs text-slate-400 line-clamp-2">Automate PDF to spreadsheet logic using optimized smart processing blocks.</p>
+                        <p class="text-[11px] text-slate-400">Configure automated logic models to translate document elements to text arrays.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- CHAT MESSAGES CONTAINER (Hidden initially or works dynamically) -->
-            <!-- Is section ko aap JavaScript se fill kar sakte hain messages ke liye -->
+            <!-- ACTIVE LOG DIALOGUES CONTAINER -->
+            <div id="conversationStream" class="space-y-6 hidden w-full">
+                <!-- Dynamic Content Hydrated by JavaScript -->
+            </div>
 
         </div>
 
-        <!-- FOOTER INPUT BAR -->
+        <!-- CONTROL TERMINAL INPUT SYSTEM -->
         <div class="p-4 md:p-6 bg-gradient-to-t from-[#0b0f19] via-[#0b0f19] to-transparent sticky bottom-0 w-full max-w-4xl mx-auto">
-            <div class="bg-[#0f1524] border border-slate-800/80 rounded-2xl p-3 focus-within:border-indigo-500/50 focus-within:ring-1 focus-within:ring-indigo-500/50 transition-all shadow-xl neon-glow">
+            <div class="bg-[#0f1524] border border-slate-800 rounded-xl p-2.5 focus-within:border-indigo-500/70 transition-all glow-input">
                 
-                <!-- Text Area / Input -->
                 <textarea 
+                    id="primaryInput"
                     rows="1" 
-                    placeholder="Ask SmartGPT anything..." 
-                    class="w-full bg-transparent text-slate-100 placeholder-slate-500 focus:outline-none resize-none text-sm md:text-base px-2 max-h-40"
-                    style="height: auto;"
+                    placeholder="Enter process instruction prompt here..." 
+                    class="w-full bg-transparent text-slate-100 placeholder-slate-500 focus:outline-none resize-none text-xs md:text-sm px-2 max-h-32"
                 ></textarea>
 
-                <!-- Tool Buttons & Action Send -->
-                <div class="flex items-center justify-between border-t border-slate-800/60 pt-3 mt-2 px-1">
-                    <!-- Left Tools -->
-                    <div class="flex items-center gap-3 text-slate-400">
-                        <button class="hover:text-indigo-400 transition-colors text-sm md:text-base p-1.5 hover:bg-slate-800/50 rounded-lg" title="Attach Files">
-                            <i class="fa-solid fa-paperclip"></i>
+                <div class="flex items-center justify-between border-t border-slate-800/80 pt-2.5 mt-2 px-1">
+                    <!-- Utility Actions -->
+                    <div class="flex items-center gap-1.5 text-slate-400">
+                        <button id="uploadAttachmentBtn" class="hover:text-indigo-400 p-1.5 hover:bg-slate-800/60 rounded-lg transition-colors" title="Attach Document Element">
+                            <i class="fa-solid fa-paperclip text-xs"></i>
                         </button>
-                        <button class="hover:text-indigo-400 transition-colors text-sm md:text-base p-1.5 hover:bg-slate-800/50 rounded-lg" title="Web Search">
-                            <i class="fa-solid fa-globe"></i>
-                        </button>
-                        <button class="hover:text-indigo-400 transition-colors text-sm md:text-base p-1.5 hover:bg-slate-800/50 rounded-lg" title="Data Tool">
-                            <i class="fa-solid fa-chart-simple"></i>
+                        <button id="webSearchToggleBtn" class="hover:text-indigo-400 p-1.5 hover:bg-slate-800/60 rounded-lg transition-colors" title="Toggle Network Connection">
+                            <i class="fa-solid fa-network-wired text-xs"></i>
                         </button>
                     </div>
 
-                    <!-- Right Action Button -->
+                    <!-- Submission Management -->
                     <div class="flex items-center gap-2">
-                        <span class="text-[11px] text-slate-500 font-mono hidden sm:inline">Use Shift + Enter for lines</span>
-                        <button class="bg-indigo-600 hover:bg-indigo-500 text-white w-9 h-9 rounded-xl flex items-center justify-center transition-all shadow-md shadow-indigo-600/20">
-                            <i class="fa-solid fa-arrow-up text-sm"></i>
+                        <span class="text-[10px] text-slate-500 font-mono hidden sm:inline">Press Enter to dispatch</span>
+                        <button id="dispatchPromptBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all">
+                            <i class="fa-solid fa-arrow-up text-xs"></i>
                         </button>
                     </div>
                 </div>
 
             </div>
-            <p class="text-center text-[11px] text-slate-600 mt-3">
-                SmartGPT can make mistakes. Verify critical code, data pipelines, and legal structures.
-            </p>
+            <div class="flex justify-between items-center px-1 mt-2 text-[10px] text-slate-600">
+                <span>System Protocol: Verified Secure Execution</span>
+                <span>SmartGPT Enterprise Engine v2.0</span>
+            </div>
         </div>
 
     </main>
 
-    <!-- Simple JavaScript for Textarea Auto-grow (Optional Feel Upgrade) -->
+    <!-- CORE FUNCTIONAL LOGIC CONTROLLER -->
     <script>
-        const tx = document.getElementsByTagName("textarea");
-        for (let i = 0; i < tx.length; i++) {
-            tx[i].setAttribute("style", "height:" + (tx[i].scrollHeight) + "px;overflow-y:hidden;");
-            tx[i].addEventListener("input", OnInput, false);
+        // DOM Nodes Collection
+        const primaryInput = document.getElementById('primaryInput');
+        const dispatchPromptBtn = document.getElementById('dispatchPromptBtn');
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const conversationStream = document.getElementById('conversationStream');
+        const workspaceArea = document.getElementById('workspaceArea');
+        const newSessionBtn = document.getElementById('newSessionBtn');
+        const clearWorkspaceBtn = document.getElementById('clearWorkspaceBtn');
+        const menuToggleBtn = document.getElementById('menuToggleBtn');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+        const suggestionCards = document.querySelectorAll('.suggestion-card');
+        const historyItems = document.querySelectorAll('.history-item');
+        const uploadAttachmentBtn = document.getElementById('uploadAttachmentBtn');
+        const webSearchToggleBtn = document.getElementById('webSearchToggleBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
+
+        // State Machine
+        let conversationIsActive = false;
+        let networkContextActive = false;
+
+        // Auto-Adjusting Input Layout Height
+        function initializeTextareaGrow() {
+            primaryInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
         }
 
-        function OnInput() {
-            this.style.height = 0;
-            this.style.height = (this.scrollHeight) + "px";
+        // Sidebar Navigation Toggles for Mobile layouts
+        function toggleSidebar(open) {
+            if (open) {
+                sidebar.classList.remove('-translate-x-full');
+                sidebarBackdrop.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                sidebarBackdrop.classList.add('hidden');
+            }
         }
+
+        // Clear Workspace State
+        function purgeWorkspace() {
+            conversationStream.innerHTML = '';
+            conversationStream.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+            conversationIsActive = false;
+            primaryInput.value = '';
+            primaryInput.style.height = 'auto';
+        }
+
+        // UI Append Utility
+        function appendDialogueBlock(role, messageText) {
+            // Hide welcome screen context if first trigger run
+            if (!conversationIsActive) {
+                welcomeScreen.classList.add('hidden');
+                conversationStream.classList.remove('hidden');
+                conversationIsActive = true;
+            }
+
+            const dialogueWrapper = document.createElement('div');
+            dialogueWrapper.className = `flex gap-4 p-4 rounded-xl border ${
+                role === 'user' 
+                ? 'bg-slate-800/20 border-slate-800/40' 
+                : 'bg-[#0f1524]/60 border-slate-800/80'
+            }`;
+
+            const entityIcon = document.createElement('div');
+            entityIcon.className = `w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 ${
+                role === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-200'
+            }`;
+            entityIcon.innerHTML = role === 'user' ? 'U' : 'AI';
+
+            const payloadContainer = document.createElement('div');
+            payloadContainer.className = "flex-1 space-y-2 text-xs md:text-sm leading-relaxed text-slate-300 select-text";
+            
+            if (role === 'user') {
+                payloadContainer.innerText = messageText;
+                dialogueWrapper.appendChild(entityIcon);
+                dialogueWrapper.appendChild(payloadContainer);
+                conversationStream.appendChild(dialogueWrapper);
+            } else {
+                dialogueWrapper.appendChild(entityIcon);
+                dialogueWrapper.appendChild(payloadContainer);
+                conversationStream.appendChild(dialogueWrapper);
+                // Trigger response system stream simulation
+                simulateResponseStream(payloadContainer, messageText);
+            }
+
+            // Smooth scroll anchor focus adjustment
+            setTimeout(() => {
+                workspaceArea.scrollTo({
+                    top: workspaceArea.scrollHeight,
+                    behavior: 'smooth'
+                });
+            }, 50);
+        }
+
+        // Mock System Simulation for Response Engine Streaming
+        function simulateResponseStream(targetContainer, textPayload) {
+            let index = 0;
+            targetContainer.innerHTML = ""; // Clean context
+            
+            // Temporary indicator block element
+            const cursorIndicator = document.createElement('span');
+            cursorIndicator.className = "inline-block w-1 h-3.5 bg-indigo-500 ml-0.5 animate-pulse";
+            targetContainer.appendChild(cursorIndicator);
+
+            const streamInterval = setInterval(() => {
+                if (index < textPayload.length) {
+                    // Check if char sequence structural logic rules apply
+                    if(textPayload.substr(index, 4) === "<pre>") {
+                        const endPre = textPayload.indexOf("</pre>", index);
+                        if(endPre !== -1) {
+                            const preBlockHtml = textPayload.substring(index, endPre + 6);
+                            cursorIndicator.insertAdjacentHTML('beforebegin', preBlockHtml);
+                            index = endPre + 6;
+                            return;
+                        }
+                    }
+                    
+                    cursorIndicator.insertAdjacentText('beforebegin', textPayload.charAt(index));
+                    index++;
+                    
+                    // Progressive scroll tracking focus during response print
+                    if (index % 5 === 0) {
+                        workspaceArea.scrollTop = workspaceArea.scrollHeight;
+                    }
+                } else {
+                    clearInterval(streamInterval);
+                    cursorIndicator.remove(); // Safely drop visual indicator line
+                }
+            }, 8); // Fast operational typing speed execution
+        }
+
+        // Process Submissions Router
+        function processInstructionDispatch() {
+            const promptValue = primaryInput.value.trim();
+            if (!promptValue) return;
+
+            // Render User Prompt Instantly
+            appendDialogueBlock('user', promptValue);
+            primaryInput.value = '';
+            primaryInput.style.height = 'auto';
+
+            // Generate contextual response arrays based on strings matching criteria
+            let simulatedSystemOutput = "Command acknowledged. Processing standard telemetry parameters for evaluation block. Execution trace successfully finished with exit status 0.";
+            
+            if (promptValue.toLowerCase().includes('data') || promptValue.toLowerCase().includes('dataset')) {
+                simulatedSystemOutput = "Dataset analysis initialized.\n\nParsing records... OK\nValidating structural keys... OK\n\nNo conversion anomalies detected. Data schema aligns perfectly with target storage arrays.";
+            } else if (promptValue.toLowerCase().includes('script') || promptValue.toLowerCase().includes('code')) {
+                simulatedSystemOutput = "System compiled clean functional execution block standard script logic:\n<pre>function executeBackupJob() {\n  const systemFolder = DriveApp.getFolderById('TARGET_STORAGE_ID');\n  console.log('Operational sync completed successfully.');\n}</pre>\nDeploy the compiled configuration object block inside your local runner container setup.";
+            } else if (promptValue.toLowerCase().includes('ebook') || promptValue.toLowerCase().includes('format')) {
+                simulatedSystemOutput = "Typography layout optimization parsed successfully:\n- Frontispiece structural header constraints: Applied\n- Section spacing margins configured to uniform global limits.\n- Index link table map generation: Dynamic matrix valid.";
+            }
+
+            // Simulate Network Delay before response streaming starts
+            setTimeout(() => {
+                appendDialogueBlock('ai', simulatedSystemOutput);
+            }, 400);
+        }
+
+        // Wiring Core Operational Action Listeners
+        function bindSystemEvents() {
+            // Textarea Action Keys
+            primaryInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    processInstructionDispatch();
+                }
+            });
+
+            dispatchPromptBtn.addEventListener('click', processInstructionDispatch);
+
+            // UI Navigation Reset Buttons
+            newSessionBtn.addEventListener('click', () => {
+                purgeWorkspace();
+                toggleSidebar(false);
+            });
+            clearWorkspaceBtn.addEventListener('click', purgeWorkspace);
+
+            // Responsive Sidebar System Actions
+            menuToggleBtn.addEventListener('click', () => toggleSidebar(true));
+            closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
+            sidebarBackdrop.addEventListener('click', () => toggleSidebar(false));
+
+            // Prompt Template Cards Routing Event Mapping
+            suggestionCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const inlinePromptText = card.getAttribute('data-prompt');
+                    primaryInput.value = inlinePromptText;
+                    primaryInput.focus();
+                    // Set heights tracking
+                    primaryInput.style.height = 'auto';
+                    primaryInput.style.height = primaryInput.scrollHeight + 'px';
+                });
+            });
+
+            // Active State management for sidebar entries tracking
+            historyItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    historyItems.forEach(i => {
+                        i.classList.remove('bg-slate-800/60', 'border', 'border-slate-700/40');
+                        i.classList.add('hover:bg-slate-800/30', 'text-slate-400');
+                    });
+                    this.classList.add('bg-slate-800/60', 'border', 'border-slate-700/40');
+                    this.classList.remove('hover:bg-slate-800/30', 'text-slate-400');
+                    
+                    // Simulate loading item conversation context logs
+                    purgeWorkspace();
+                    setTimeout(() => {
+                        appendDialogueBlock('user', "Context request retrieval parameter execution string mapping data logic.");
+                        setTimeout(() => {
+                            appendDialogueBlock('ai', "Previous operational logs restored successfully. Enter standard prompt instructions to evaluate active memory.");
+                        }, 300);
+                    }, 150);
+                    toggleSidebar(false);
+                });
+            });
+
+            // Action UI Feedback Event Mocking
+            uploadAttachmentBtn.addEventListener('click', () => alert('System Trigger: Native file attachment target browser container system dialog invoked.'));
+            settingsBtn.addEventListener('click', () => alert('System Notification: Core engine preference matrix settings requested.'));
+            
+            webSearchToggleBtn.addEventListener('click', function() {
+                networkContextActive = !networkContextActive;
+                if(networkContextActive) {
+                    this.classList.remove('text-slate-400');
+                    this.classList.add('text-indigo-400');
+                    alert('Network Context Hook: Global index search execution parameters are now active.');
+                } else {
+                    this.classList.remove('text-indigo-400');
+                    this.classList.add('text-slate-400');
+                    alert('Network Context Hook: Local environment parameters restored.');
+                }
+            });
+        }
+
+        // System Startup Trigger Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeTextareaGrow();
+            bindSystemEvents();
+        });
     </script>
 </body>
 </html>
