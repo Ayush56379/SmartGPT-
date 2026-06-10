@@ -3,38 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGPT - Enterprise Engine</title>
+    <title>SmartGPT - Enterprise Console</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Smooth Premium Scrollbar */
         ::-webkit-scrollbar {
             width: 5px;
             height: 5px;
         }
         ::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #f8fafc;
         }
         ::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: #cbd5e1;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #475569;
+            background: #94a3b8;
         }
-        .glow-input:focus-within {
-            box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
+
+        /* Clean Micro-Animations */
+        .fade-in-up {
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Technical Code Blocks Formatting */
         pre {
-            background-color: #0f1524;
+            background-color: #f1f5f9;
             padding: 1rem;
             border-radius: 0.5rem;
-            border: 1px solid #334155;
+            border: 1px solid #e2e8f0;
             font-family: monospace;
             font-size: 0.875rem;
             overflow-x: auto;
             margin: 0.5rem 0;
+            color: #0f172a;
         }
-        /* Pulse Indicator for Processing States */
+
+        /* Processing/Typing Pulse Dot Animation */
         .typing-dot {
             animation: typingBlink 1.4s infinite both;
         }
@@ -47,121 +58,121 @@
         }
     </style>
 </head>
-<body class="bg-[#0b0f19] text-slate-200 font-sans h-screen flex overflow-hidden">
+<body class="bg-[#ffffff] text-slate-800 font-sans h-screen flex overflow-hidden antialiased">
 
-    <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
+    <div id="sidebarBackdrop" class="fixed inset-0 bg-slate-900/20 backdrop-blur-sm z-20 hidden md:hidden"></div>
 
-    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-[#0f1524] border-r border-slate-800/80 flex flex-col justify-between p-4 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out z-30">
+    <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-[#f8fafc] border-r border-slate-200 flex flex-col justify-between p-4 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out z-30">
         <div>
-            <div class="flex items-center justify-between px-2 py-3 mb-6">
+            <div class="flex items-center justify-between px-2 py-3 mb-5">
                 <div class="flex items-center gap-3">
-                    <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-md shadow-indigo-600/20">
-                        <i class="fa-solid fa-brain text-lg"></i>
+                    <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-md shadow-indigo-600/10">
+                        <i class="fa-solid fa-brain text-md"></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold tracking-tight text-white">SmartGPT</h1>
-                        <span class="text-[10px] text-indigo-400 font-mono tracking-wider uppercase block -mt-1">Enterprise Platform</span>
+                        <h1 class="text-md font-bold tracking-tight text-slate-900">SmartGPT</h1>
+                        <span class="text-[10px] text-indigo-600 font-mono tracking-wider uppercase block -mt-0.5">Enterprise Platform</span>
                     </div>
                 </div>
-                <button id="closeSidebarBtn" class="md:hidden text-slate-400 hover:text-white p-1">
+                <button id="closeSidebarBtn" class="md:hidden text-slate-400 hover:text-slate-600 p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <button onclick="newChat()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 px-4 rounded-xl flex items-center justify-between transition-all duration-200 mb-6 group">
-                <div class="flex items-center gap-2.5">
-                    <i class="fa-solid fa-plus text-xs"></i>
+            <button onclick="newChat()" class="w-full bg-slate-900 hover:bg-slate-800 text-white text-xs font-medium py-2.5 px-4 rounded-xl flex items-center justify-between transition-all duration-200 mb-5 shadow-sm group">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
                     <span>New Session</span>
                 </div>
-                <span class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded text-slate-300 font-mono">⌘N</span>
+                <span class="text-[10px] bg-white/10 px-1.5 py-0.5 rounded text-slate-300 font-mono">⌘N</span>
             </button>
 
             <div class="space-y-1">
-                <p class="text-[11px] font-semibold text-slate-500 px-2 uppercase tracking-wider mb-2">Saved History</p>
-                <div id="history" class="space-y-1 overflow-y-auto max-h-[50vh]">
+                <p class="text-[10px] font-bold text-slate-400 px-2 uppercase tracking-wider mb-2">Saved History</p>
+                <div id="history" class="space-y-1 overflow-y-auto max-h-[55vh] pr-1">
                     </div>
             </div>
         </div>
 
-        <div class="border-t border-slate-800/80 pt-4">
-            <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-800/40 transition-all">
+        <div class="border-t border-slate-200 pt-4">
+            <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-100 transition-all">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs">
+                    <div class="w-8 h-8 rounded-lg bg-slate-200 flex items-center justify-center font-bold text-slate-700 text-xs">
                         AP
                     </div>
                     <div>
-                        <p class="text-xs font-semibold text-slate-200">Ayush Prajapati</p>
-                        <p class="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
-                            <span class="w-1 h-1 bg-emerald-400 rounded-full inline-block"></span> Secure Connection
+                        <p class="text-xs font-semibold text-slate-900">Ayush Prajapati</p>
+                        <p class="text-[10px] text-emerald-600 font-medium flex items-center gap-1">
+                            <span class="w-1 h-1 bg-emerald-500 rounded-full inline-block"></span> Secure Session
                         </p>
                     </div>
                 </div>
-                <button onclick="clearAllData()" class="text-slate-500 hover:text-red-400 p-1.5 transition-colors" title="Purge Local Database">
+                <button onclick="clearAllData()" class="text-slate-400 hover:text-red-500 p-1.5 transition-colors" title="Purge Local Datastore">
                     <i class="fa-solid fa-trash-can text-xs"></i>
                 </button>
             </div>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col h-full bg-[#0b0f19] relative overflow-hidden">
+    <main class="flex-1 flex flex-col h-full bg-[#ffffff] relative overflow-hidden">
         
-        <header class="h-14 border-b border-slate-800/60 flex items-center justify-between px-6 bg-[#0b0f19] z-10">
+        <header class="h-14 border-b border-slate-200 flex items-center justify-between px-6 bg-[#ffffff] z-10">
             <div class="flex items-center gap-4">
-                <button id="menuToggleBtn" class="md:hidden text-slate-400 hover:text-white text-base">
+                <button id="menuToggleBtn" class="md:hidden text-slate-500 hover:text-slate-800 text-base">
                     <i class="fa-solid fa-bars-staggered"></i>
                 </button>
                 <div class="flex items-center gap-2">
-                    <span class="text-xs font-semibold tracking-wide text-slate-300">Model: SmartGPT-4o</span>
-                    <span class="text-[9px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-mono">GAS API Endpoint</span>
+                    <span class="text-xs font-semibold tracking-wide text-slate-700">Model: SmartGPT-4o</span>
+                    <span class="text-[9px] bg-slate-100 text-slate-600 border border-slate-200 px-2 py-0.5 rounded font-mono">GAS Live Link</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <button onclick="clearWorkspace()" class="text-slate-400 hover:text-slate-200 text-xs border border-slate-800 rounded-lg px-2.5 py-1.5 bg-[#0f1524] transition-all">
-                    Reset Workspace
+                <button onclick="clearWorkspace()" class="text-slate-500 hover:text-slate-800 text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 bg-[#ffffff] hover:bg-slate-50 transition-all shadow-sm">
+                    Reset Canvas
                 </button>
             </div>
         </header>
 
-        <div id="workspaceArea" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 max-w-4xl w-full mx-auto flex flex-col">
+        <div id="workspaceArea" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 max-w-3xl w-full mx-auto flex flex-col">
             
-            <div id="welcomeScreen" class="my-auto text-center space-y-6 py-4">
-                <div class="space-y-2">
-                    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-white">SmartGPT Core Engine</h2>
-                    <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto">Interface execution panel. Provide analytical processing prompts below.</p>
+            <div id="welcomeScreen" class="my-auto text-center space-y-5 py-4 fade-in-up">
+                <div class="space-y-1.5">
+                    <h2 class="text-2xl font-bold tracking-tight text-slate-900">SmartGPT Operational Interface</h2>
+                    <p class="text-slate-500 text-xs max-w-sm mx-auto">Select an administrative script macro or construct a clean execution prompt below.</p>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto pt-4">
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Analyze the following raw dataset for pipeline compatibility: ')">
-                        <div class="flex items-center gap-2.5 mb-1.5">
-                            <i class="fa-solid fa-database text-indigo-400 text-xs"></i>
-                            <h3 class="font-semibold text-xs text-slate-200">Data Transformations</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl mx-auto pt-4">
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-200 hover:bg-white" onclick="injectPrompt('Analyze the following raw dataset for pipeline compatibility: ')">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-database text-slate-600 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-900">Data Engineering</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Process complex structural arrays for analytical data pipeline modules.</p>
+                        <p class="text-[11px] text-slate-500 leading-normal">Parse and format structural matrices for automated warehouse modules.</p>
                     </div>
 
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Write an optimized Google Apps Script to automate: ')">
-                        <div class="flex items-center gap-2.5 mb-1.5">
-                            <i class="fa-solid fa-code text-indigo-400 text-xs"></i>
-                            <h3 class="font-semibold text-xs text-slate-200">Google Apps Script Modules</h3>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-200 hover:bg-white" onclick="injectPrompt('Write an optimized Google Apps Script to automate: ')">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-code text-slate-600 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-900">Apps Script Modules</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Build direct execution triggers mapped with target Google Drive instances.</p>
+                        <p class="text-[11px] text-slate-500 leading-normal">Deploy clear automated execution loops inside targeted internal sheet drives.</p>
                     </div>
 
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Structure professional layout templates for Ebook compiling: ')">
-                        <div class="flex items-center gap-2.5 mb-1.5">
-                            <i class="fa-solid fa-file-invoice text-indigo-400 text-xs"></i>
-                            <h3 class="font-semibold text-xs text-slate-200">Ebook Structural Layouts</h3>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-200 hover:bg-white" onclick="injectPrompt('Structure professional layout templates for Ebook compiling: ')">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-file-invoice text-slate-600 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-900">Structural Typographics</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Apply clean formatting system architectures to layout presentation text fields.</p>
+                        <p class="text-[11px] text-slate-500 leading-normal">Normalize spatial structural constraints on publication layouts cleanly.</p>
                     </div>
 
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Create a data mapping model to convert document tables to spreadsheet arrays.')">
-                        <div class="flex items-center gap-2.5 mb-1.5">
-                            <i class="fa-solid fa-microchip text-indigo-400 text-xs"></i>
-                            <h3 class="font-semibold text-xs text-slate-200">Spreadsheet Automation Logic</h3>
+                    <div class="p-3.5 rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-500/40 cursor-pointer text-left transition-all duration-200 hover:bg-white" onclick="injectPrompt('Create a data mapping model to convert document tables to spreadsheet arrays.')">
+                        <div class="flex items-center gap-2 mb-1">
+                            <i class="fa-solid fa-microchip text-slate-600 text-xs"></i>
+                            <h3 class="font-semibold text-xs text-slate-900">Spreadsheet Automation</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Configure script automation processes to translate text nodes to sheet logs.</p>
+                        <p class="text-[11px] text-slate-500 leading-normal">Translate unstructured file elements into explicit logical indexing records.</p>
                     </div>
                 </div>
             </div>
@@ -170,40 +181,38 @@
 
         </div>
 
-        <div class="p-4 md:p-6 bg-gradient-to-t from-[#0b0f19] via-[#0b0f19] to-transparent sticky bottom-0 w-full max-w-4xl mx-auto">
-            <div class="bg-[#0f1524] border border-slate-800 rounded-xl p-2.5 focus-within:border-indigo-500/70 transition-all glow-input">
+        <div class="p-4 md:p-6 bg-gradient-to-t from-[#ffffff] via-[#ffffff] to-transparent sticky bottom-0 w-full max-w-3xl mx-auto">
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-2.5 focus-within:border-indigo-500/60 focus-within:bg-white transition-all shadow-sm">
                 
                 <textarea 
                     id="input"
                     rows="1" 
-                    placeholder="Enter process instruction prompt here..." 
-                    class="w-full bg-transparent text-slate-100 placeholder-slate-500 focus:outline-none resize-none text-xs md:text-sm px-2 max-h-32"
+                    placeholder="Enter explicit configuration commands here..." 
+                    class="w-full bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none resize-none text-xs md:text-sm px-1.5 max-h-32"
                     onkeypress="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); send(); }"
                 ></textarea>
 
-                <div class="flex items-center justify-between border-t border-slate-800/80 pt-2.5 mt-2 px-1">
-                    <div class="flex items-center gap-1.5 text-slate-500 text-[10px]">
-                        <span class="font-mono">Shift + Enter for multi-line</span>
+                <div class="flex items-center justify-between border-t border-slate-200 pt-2 mt-2 px-0.5">
+                    <div class="text-[10px] text-slate-400 font-mono">
+                        <span>Shift + Enter for breaklines</span>
                     </div>
 
-                    <div class="flex items-center gap-2">
-                        <button onclick="send()" class="bg-indigo-600 hover:bg-indigo-500 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all">
-                            <i class="fa-solid fa-arrow-up text-xs"></i>
-                        </button>
-                    </div>
+                    <button onclick="send()" class="bg-slate-950 hover:bg-slate-800 text-white w-7 h-7 rounded-lg flex items-center justify-center transition-all shadow-sm">
+                        <i class="fa-solid fa-arrow-up text-xs"></i>
+                    </button>
                 </div>
 
             </div>
-            <div class="flex justify-between items-center px-1 mt-2 text-[10px] text-slate-600">
-                <span>System Encryption: Dynamic SSL Verification</span>
-                <span>SmartGPT v2.0 Pro Architecture</span>
+            <div class="flex justify-between items-center px-1 mt-2 text-[10px] text-slate-400 font-medium">
+                <span>System Encryption Status: Verified</span>
+                <span>SmartGPT Pro Platform V2.0</span>
             </div>
         </div>
 
     </main>
 
     <script>
-        // Google Macro Target Endpoint Config Array
+        // System Endpoint Array Setup Target Macro
         const API = "https://script.google.com/macros/s/AKfycbwgsVWUOju0OHwkDQpWss-_0ktI4_2Nmv5KgNxhD69bJKjIomLYoK-fFtFe8p8bxdnD9A/exec";
 
         const chat = document.getElementById("chat");
@@ -211,7 +220,7 @@
         const welcomeScreen = document.getElementById("welcomeScreen");
         const workspaceArea = document.getElementById("workspaceArea");
 
-        // Mobile Layout Toggle Elements
+        // Mobile Layout Toggle Elements Trackers
         const sidebar = document.getElementById("sidebar");
         const sidebarBackdrop = document.getElementById("sidebarBackdrop");
         const menuToggleBtn = document.getElementById("menuToggleBtn");
@@ -220,18 +229,18 @@
         let chats = JSON.parse(localStorage.getItem("chats")) || [];
         let currentChat = null;
 
-        // Auto growing height tracker for input element
+        // Auto growing system height calculation metrics
         input.addEventListener('input', function() {
             this.style.height = 'auto';
             this.style.height = this.scrollHeight + 'px';
         });
 
-        // Mobile Responsive Toggles
+        // Mobile Responsive Click Hooks Bindings
         if(menuToggleBtn) menuToggleBtn.addEventListener('click', () => { sidebar.classList.remove('-translate-x-full'); sidebarBackdrop.classList.remove('hidden'); });
         if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); sidebarBackdrop.classList.add('hidden'); });
         if(sidebarBackdrop) sidebarBackdrop.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); sidebarBackdrop.classList.add('hidden'); });
 
-        /* ================= MANAGEMENT CORE ================= */
+        /* ================= HISTORY LOG DATABASE MANAGEMENT ================= */
 
         function newChat() {
             currentChat = {
@@ -244,7 +253,6 @@
             renderChats();
             renderMessages();
             
-            // Mobile Sidebar Auto dismiss after switching views
             sidebar.classList.add('-translate-x-full');
             sidebarBackdrop.classList.add('hidden');
         }
@@ -259,20 +267,20 @@
 
             chats.forEach(chatItem => {
                 const button = document.createElement("button");
-                // Professional class mapping logic instead of simple div lists
                 const isActive = currentChat && currentChat.id === chatItem.id;
+                
                 button.className = `w-full flex items-center justify-between p-2.5 rounded-xl text-left text-xs transition-all ${
                     isActive 
-                    ? 'bg-slate-800/60 border border-slate-700/40 text-slate-200' 
-                    : 'hover:bg-slate-800/30 text-slate-400 hover:text-slate-200'
+                    ? 'bg-slate-100 font-semibold text-slate-900 border border-slate-200/60' 
+                    : 'hover:bg-slate-50 text-slate-500 hover:text-slate-800'
                 }`;
 
-                const truncatedTitle = chatItem.messages[0]?.text || "New Operations Stream";
+                const titleString = chatItem.messages[0]?.text || "New Operations Stream";
                 
                 button.innerHTML = `
-                    <div class="flex items-center gap-3 truncate w-full">
-                        <i class="fa-regular fa-message ${isActive ? 'text-indigo-400' : ''} text-[11px] flex-shrink-0"></i>
-                        <span class="truncate pr-1">${truncatedTitle}</span>
+                    <div class="flex items-center gap-2.5 truncate w-full">
+                        <i class="fa-regular fa-message ${isActive ? 'text-indigo-600' : 'text-slate-400'} text-[11px] flex-shrink-0"></i>
+                        <span class="truncate pr-1">${titleString}</span>
                     </div>
                 `;
 
@@ -301,46 +309,67 @@
             chat.classList.remove('hidden');
 
             currentChat.messages.forEach(m => {
-                addMsg(m.text, m.type, false); // Direct load history logs without streaming effects
+                addMsg(m.text, m.type, false);
             });
             
             setTimeout(() => { workspaceArea.scrollTop = workspaceArea.scrollHeight; }, 20);
         }
 
-        /* ================= DISPLAY CONTROLS ================= */
+        /* ================= RENDERING FLOW & ONE-CLICK COPY ================= */
 
         function addMsg(text, type, triggerStreamAnimation = false) {
             welcomeScreen.classList.add('hidden');
             chat.classList.remove('hidden');
 
-            const dialogueBlock = document.createElement("div");
-            dialogueBlock.className = `flex gap-4 p-4 rounded-xl border ${
+            const blockElement = document.createElement("div");
+            blockElement.className = `flex gap-4 p-4 rounded-xl border fade-in-up group relative ${
                 type === 'user' 
-                ? 'bg-slate-800/20 border-slate-800/40' 
-                : 'bg-[#0f1524]/60 border-slate-800/80'
+                ? 'bg-slate-50/50 border-slate-200/60' 
+                : 'bg-[#ffffff] border-slate-200'
             }`;
 
-            const identityIcon = document.createElement('div');
-            identityIcon.className = `w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold flex-shrink-0 ${
-                type === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-200'
+            const iconNode = document.createElement('div');
+            iconNode.className = `w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold flex-shrink-0 ${
+                type === 'user' ? 'bg-slate-900 text-white' : 'bg-indigo-600 text-white'
             }`;
-            identityIcon.innerHTML = type === 'user' ? 'U' : 'AI';
+            iconNode.innerHTML = type === 'user' ? 'U' : 'AI';
 
-            const payloadContainer = document.createElement('div');
-            payloadContainer.className = "flex-1 space-y-2 text-xs md:text-sm leading-relaxed text-slate-300 select-text whitespace-pre-wrap";
+            const payloadBox = document.createElement('div');
+            payloadBox.className = "flex-1 space-y-2 text-xs md:text-sm leading-relaxed text-slate-700 select-text pr-6 whitespace-pre-wrap";
 
-            dialogueBlock.appendChild(identityIcon);
-            dialogueBlock.appendChild(payloadContainer);
-            chat.appendChild(dialogueBlock);
+            blockElement.appendChild(iconNode);
+            blockElement.appendChild(payloadBox);
+
+            // Add Functional One-Click Copy Macro Trigger Button for AI Nodes
+            if (type === 'ai') {
+                const copyButton = document.createElement('button');
+                copyButton.className = "absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-slate-50 border border-slate-200 rounded-md p-1.5 text-slate-400 hover:text-slate-600 shadow-sm flex items-center justify-center";
+                copyButton.title = "Copy output to clipboard";
+                copyButton.innerHTML = `<i class="fa-regular fa-clone text-[11px]"></i>`;
+                
+                copyButton.onclick = () => {
+                    // Extract text content cleanly filtering outer element codes wrapping
+                    const cleanString = payloadBox.innerText || payloadBox.textContent;
+                    navigator.clipboard.writeText(cleanString).then(() => {
+                        // Success dynamic micro text substitution indicator feedback loop
+                        copyButton.innerHTML = `<i class="fa-solid fa-check text-[11px] text-emerald-500"></i>`;
+                        setTimeout(() => {
+                            copyButton.innerHTML = `<i class="fa-regular fa-clone text-[11px]"></i>`;
+                        }, 1500);
+                    }).catch(err => console.error("Clipboard operational write error: ", err));
+                };
+                blockElement.appendChild(copyButton);
+            }
+
+            chat.appendChild(blockElement);
             
             if (type === 'ai' && triggerStreamAnimation) {
-                simulateTypewriter(payloadContainer, text);
+                simulateTypewriterStream(payloadBox, text);
             } else {
-                // If it contains code response, safely structure it
                 if(text.includes("```")) {
-                    payloadContainer.innerHTML = formatCodeResponse(text);
+                    payloadBox.innerHTML = formatCodeResponse(text);
                 } else {
-                    payloadContainer.textContent = text;
+                    payloadBox.textContent = text;
                 }
             }
 
@@ -349,11 +378,11 @@
 
         function showTypingIndicator() {
             const indicatorBlock = document.createElement("div");
-            indicatorBlock.className = "flex gap-4 p-4 rounded-xl border bg-[#0f1524]/60 border-slate-800/80"
+            indicatorBlock.className = "flex gap-4 p-4 rounded-xl border bg-[#ffffff] border-slate-200 fade-in-up"
             indicatorBlock.id = "typingIndicator";
             
             indicatorBlock.innerHTML = `
-                <div class="w-7 h-7 rounded-lg bg-slate-700 text-slate-200 flex items-center justify-center text-[10px] font-mono font-bold flex-shrink-0">AI</div>
+                <div class="w-7 h-7 rounded-lg bg-indigo-600 text-white flex items-center justify-center text-[10px] font-mono font-bold flex-shrink-0">AI</div>
                 <div class="flex items-center gap-1 py-2">
                     <span class="typing-dot w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
                     <span class="typing-dot w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
@@ -369,24 +398,23 @@
             if (element) element.remove();
         }
 
-        // Professional Stream Animation setup
-        function simulateTypewriter(target, fullText) {
+        // Professional Clean Typewriter Core Simulation
+        function simulateTypewriterStream(target, fullText) {
             let pointer = 0;
             target.innerHTML = "";
             
-            const pipelineCursor = document.createElement('span');
-            pipelineCursor.className = "inline-block w-1 h-3.5 bg-indigo-500 ml-0.5 animate-pulse";
-            target.appendChild(pipelineCursor);
+            const internalCursor = document.createElement('span');
+            internalCursor.className = "inline-block w-1 h-3.5 bg-indigo-600 ml-0.5 animate-pulse";
+            target.appendChild(internalCursor);
 
-            const timer = setInterval(() => {
+            const streamTimer = setInterval(() => {
                 if (pointer < fullText.length) {
-                    pipelineCursor.insertAdjacentText('beforebegin', fullText.charAt(pointer));
+                    internalCursor.insertAdjacentText('beforebegin', fullText.charAt(pointer));
                     pointer++;
                     if(pointer % 4 === 0) workspaceArea.scrollTop = workspaceArea.scrollHeight;
                 } else {
-                    clearInterval(timer);
-                    pipelineCursor.remove();
-                    // Final markdown re-parsing check once stream terminates
+                    clearInterval(streamTimer);
+                    internalCursor.remove();
                     if(fullText.includes("```")) {
                         target.innerHTML = formatCodeResponse(fullText);
                     }
@@ -394,14 +422,13 @@
             }, 8);
         }
 
-        // Utility layout tool to structure code arrays cleanly
         function formatCodeResponse(rawText) {
             return rawText.replace(/```([\s\S]*?)```/g, function(match, codeSegment) {
                 return `<pre><code>${codeSegment.trim()}</code></pre>`;
             });
         }
 
-        /* ================= SEND EXECUTOR SYSTEM ================= */
+        /* ================= SEND PACKET EXECUTOR TRACE ================= */
 
         async function send() {
             const msg = input.value.trim();
@@ -428,8 +455,6 @@
                 const data = await response.json();
 
                 removeTypingIndicator();
-
-                // Dynamic API string routing layout display
                 addMsg(data.reply, "ai", true);
 
                 currentChat.messages.push({
@@ -442,11 +467,11 @@
 
             } catch (err) {
                 removeTypingIndicator();
-                addMsg("⚠️ Network Engine Exception: Google Script API endpoint unresponsive.", "ai", false);
+                addMsg("⚠️ Runtime Network Exception: Live Google Script endpoint unreachable.", "ai", false);
             }
         }
 
-        /* ================= COMPONENT UTILITIES ================= */
+        /* ================= SYSTEM BUTTON AUXILIARIES ================= */
 
         function injectPrompt(text) {
             input.value = text;
@@ -465,7 +490,7 @@
         }
 
         function clearAllData() {
-            if(confirm("Are you sure you want to completely purge local database historical logs?")) {
+            if(confirm("Confirm action: Completely wipe out local database transaction records?")) {
                 localStorage.removeItem("chats");
                 chats = [];
                 currentChat = null;
@@ -474,7 +499,7 @@
             }
         }
 
-        /* ================= INITIALIZATION SEEDING ================= */
+        /* ================= INITIAL SEEDING TRIGGER ================= */
 
         renderChats();
 
