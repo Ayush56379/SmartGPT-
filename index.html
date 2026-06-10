@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SmartGPT - Enterprise UI</title>
-    <!-- Tailwind CSS CDN -->
+    <title>SmartGPT - Enterprise Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Core Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         ::-webkit-scrollbar {
@@ -26,7 +24,6 @@
         .glow-input:focus-within {
             box-shadow: 0 0 15px rgba(79, 70, 229, 0.15);
         }
-        /* Markdown code block syntax style */
         pre {
             background-color: #0f1524;
             padding: 1rem;
@@ -37,17 +34,25 @@
             overflow-x: auto;
             margin: 0.5rem 0;
         }
+        /* Pulse Indicator for Processing States */
+        .typing-dot {
+            animation: typingBlink 1.4s infinite both;
+        }
+        .typing-dot:nth-child(2) { animation-delay: .2s; }
+        .typing-dot:nth-child(3) { animation-delay: .4s; }
+        @keyframes typingBlink {
+            0% { opacity: .2; }
+            20% { opacity: 1; }
+            100% { opacity: .2; }
+        }
     </style>
 </head>
 <body class="bg-[#0b0f19] text-slate-200 font-sans h-screen flex overflow-hidden">
 
-    <!-- BACKDROP FOR MOBILE SIDEBAR -->
     <div id="sidebarBackdrop" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
 
-    <!-- SIDEBAR -->
     <aside id="sidebar" class="fixed inset-y-0 left-0 w-80 bg-[#0f1524] border-r border-slate-800/80 flex flex-col justify-between p-4 transform -translate-x-full md:translate-x-0 md:static transition-transform duration-300 ease-in-out z-30">
         <div>
-            <!-- Header Brand -->
             <div class="flex items-center justify-between px-2 py-3 mb-6">
                 <div class="flex items-center gap-3">
                     <div class="bg-indigo-600 p-2 rounded-lg text-white shadow-md shadow-indigo-600/20">
@@ -58,49 +63,26 @@
                         <span class="text-[10px] text-indigo-400 font-mono tracking-wider uppercase block -mt-1">Enterprise Platform</span>
                     </div>
                 </div>
-                <!-- Mobile Close Button -->
                 <button id="closeSidebarBtn" class="md:hidden text-slate-400 hover:text-white p-1">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
             </div>
 
-            <!-- Action Button -->
-            <button id="newSessionBtn" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 px-4 rounded-xl flex items-center justify-between transition-all duration-200 mb-6 group">
+            <button onclick="newChat()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-medium py-2.5 px-4 rounded-xl flex items-center justify-between transition-all duration-200 mb-6 group">
                 <div class="flex items-center gap-2.5">
                     <i class="fa-solid fa-plus text-xs"></i>
                     <span>New Session</span>
                 </div>
-                <span class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded text-slate-300 font-mono">Ctrl+N</span>
+                <span class="text-[10px] bg-black/20 px-1.5 py-0.5 rounded text-slate-300 font-mono">⌘N</span>
             </button>
 
-            <!-- Chat Navigation Management -->
             <div class="space-y-1">
-                <p class="text-[11px] font-semibold text-slate-500 px-2 uppercase tracking-wider mb-2">History</p>
-                <div id="historyContainer" class="space-y-1">
-                    <!-- Dynamic rendering elements or active layouts -->
-                    <button class="w-full flex items-center justify-between p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/40 text-slate-200 text-left text-sm transition-all history-item">
-                        <div class="flex items-center gap-3 truncate">
-                            <i class="fa-regular fa-message text-indigo-400 text-xs flex-shrink-0"></i>
-                            <span class="truncate">Advanced Data Analytics</span>
-                        </div>
-                    </button>
-                    <button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-800/30 text-slate-400 hover:text-slate-200 text-left text-sm transition-all history-item">
-                        <div class="flex items-center gap-3 truncate">
-                            <i class="fa-regular fa-message text-xs flex-shrink-0"></i>
-                            <span class="truncate">UI/UX Design Architecture</span>
-                        </div>
-                    </button>
-                    <button class="w-full flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-800/30 text-slate-400 hover:text-slate-200 text-left text-sm transition-all history-item">
-                        <div class="flex items-center gap-3 truncate">
-                            <i class="fa-regular fa-message text-xs flex-shrink-0"></i>
-                            <span class="truncate">Automated Script Logic</span>
-                        </div>
-                    </button>
-                </div>
+                <p class="text-[11px] font-semibold text-slate-500 px-2 uppercase tracking-wider mb-2">Saved History</p>
+                <div id="history" class="space-y-1 overflow-y-auto max-h-[50vh]">
+                    </div>
             </div>
         </div>
 
-        <!-- Account Interface Component -->
         <div class="border-t border-slate-800/80 pt-4">
             <div class="flex items-center justify-between p-1.5 rounded-xl hover:bg-slate-800/40 transition-all">
                 <div class="flex items-center gap-3">
@@ -110,21 +92,19 @@
                     <div>
                         <p class="text-xs font-semibold text-slate-200">Ayush Prajapati</p>
                         <p class="text-[10px] text-emerald-400 font-medium flex items-center gap-1">
-                            <span class="w-1 h-1 bg-emerald-400 rounded-full inline-block"></span> Active Tier
+                            <span class="w-1 h-1 bg-emerald-400 rounded-full inline-block"></span> Secure Connection
                         </p>
                     </div>
                 </div>
-                <button id="settingsBtn" class="text-slate-500 hover:text-slate-300 p-1.5" title="Settings">
-                    <i class="fa-solid fa-sliders text-sm"></i>
+                <button onclick="clearAllData()" class="text-slate-500 hover:text-red-400 p-1.5 transition-colors" title="Purge Local Database">
+                    <i class="fa-solid fa-trash-can text-xs"></i>
                 </button>
             </div>
         </div>
     </aside>
 
-    <!-- MAIN INTERACTION INTERFACE -->
     <main class="flex-1 flex flex-col h-full bg-[#0b0f19] relative overflow-hidden">
         
-        <!-- Navbar Control Header -->
         <header class="h-14 border-b border-slate-800/60 flex items-center justify-between px-6 bg-[#0b0f19] z-10">
             <div class="flex items-center gap-4">
                 <button id="menuToggleBtn" class="md:hidden text-slate-400 hover:text-white text-base">
@@ -132,96 +112,82 @@
                 </button>
                 <div class="flex items-center gap-2">
                     <span class="text-xs font-semibold tracking-wide text-slate-300">Model: SmartGPT-4o</span>
-                    <span class="text-[9px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-mono">Standard Endpoint</span>
+                    <span class="text-[9px] bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 px-2 py-0.5 rounded font-mono">GAS API Endpoint</span>
                 </div>
             </div>
             
             <div class="flex items-center gap-3">
-                <button id="clearWorkspaceBtn" class="text-slate-400 hover:text-slate-200 text-xs border border-slate-800 rounded-lg px-2.5 py-1.5 bg-[#0f1524] transition-all">
-                    Clear Terminal
+                <button onclick="clearWorkspace()" class="text-slate-400 hover:text-slate-200 text-xs border border-slate-800 rounded-lg px-2.5 py-1.5 bg-[#0f1524] transition-all">
+                    Reset Workspace
                 </button>
             </div>
         </header>
 
-        <!-- Container Workspace Area -->
         <div id="workspaceArea" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6 max-w-4xl w-full mx-auto flex flex-col">
             
-            <!-- Default Welcome Display Panel -->
             <div id="welcomeScreen" class="my-auto text-center space-y-6 py-4">
                 <div class="space-y-2">
-                    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-white">SmartGPT Technical Interface</h2>
-                    <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto">Select a system execution query or deploy specialized production templates below.</p>
+                    <h2 class="text-2xl md:text-3xl font-bold tracking-tight text-white">SmartGPT Core Engine</h2>
+                    <p class="text-slate-400 text-xs md:text-sm max-w-md mx-auto">Interface execution panel. Provide analytical processing prompts below.</p>
                 </div>
 
-                <!-- Strategic Quick Templates -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto pt-4">
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Analyze the following raw dataset for pipeline compatibility:">
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Analyze the following raw dataset for pipeline compatibility: ')">
                         <div class="flex items-center gap-2.5 mb-1.5">
                             <i class="fa-solid fa-database text-indigo-400 text-xs"></i>
                             <h3 class="font-semibold text-xs text-slate-200">Data Transformations</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Process and cleanse structural datasets for spreadsheet integration modules.</p>
+                        <p class="text-[11px] text-slate-400">Process complex structural arrays for analytical data pipeline modules.</p>
                     </div>
 
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Write an optimized Google Apps Script to synchronize Google Drive files:">
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Write an optimized Google Apps Script to automate: ')">
                         <div class="flex items-center gap-2.5 mb-1.5">
                             <i class="fa-solid fa-code text-indigo-400 text-xs"></i>
                             <h3 class="font-semibold text-xs text-slate-200">Google Apps Script Modules</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Deploy clean operational scripts using native storage endpoint integrations.</p>
+                        <p class="text-[11px] text-slate-400">Build direct execution triggers mapped with target Google Drive instances.</p>
                     </div>
 
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Optimize the typography hierarchy and structure layout for:">
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Structure professional layout templates for Ebook compiling: ')">
                         <div class="flex items-center gap-2.5 mb-1.5">
                             <i class="fa-solid fa-file-invoice text-indigo-400 text-xs"></i>
-                            <h3 class="font-semibold text-xs text-slate-200">Ebook Structural Formats</h3>
+                            <h3 class="font-semibold text-xs text-slate-200">Ebook Structural Layouts</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Apply formal structural standard rules to digital content distribution copies.</p>
+                        <p class="text-[11px] text-slate-400">Apply clean formatting system architectures to layout presentation text fields.</p>
                     </div>
 
-                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" data-prompt="Create a script template to map PDF fields to Excel rows automatically.">
+                    <div class="suggestion-card p-3.5 rounded-xl bg-[#0f1524] border border-slate-800 hover:border-indigo-500/50 cursor-pointer text-left transition-all duration-200" onclick="injectPrompt('Create a data mapping model to convert document tables to spreadsheet arrays.')">
                         <div class="flex items-center gap-2.5 mb-1.5">
                             <i class="fa-solid fa-microchip text-indigo-400 text-xs"></i>
-                            <h3 class="font-semibold text-xs text-slate-200">Spreadsheet Conversion Logic</h3>
+                            <h3 class="font-semibold text-xs text-slate-200">Spreadsheet Automation Logic</h3>
                         </div>
-                        <p class="text-[11px] text-slate-400">Configure automated logic models to translate document elements to text arrays.</p>
+                        <p class="text-[11px] text-slate-400">Configure script automation processes to translate text nodes to sheet logs.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- ACTIVE LOG DIALOGUES CONTAINER -->
-            <div id="conversationStream" class="space-y-6 hidden w-full">
-                <!-- Dynamic Content Hydrated by JavaScript -->
-            </div>
+            <div id="chat" class="space-y-6 hidden w-full"></div>
 
         </div>
 
-        <!-- CONTROL TERMINAL INPUT SYSTEM -->
         <div class="p-4 md:p-6 bg-gradient-to-t from-[#0b0f19] via-[#0b0f19] to-transparent sticky bottom-0 w-full max-w-4xl mx-auto">
             <div class="bg-[#0f1524] border border-slate-800 rounded-xl p-2.5 focus-within:border-indigo-500/70 transition-all glow-input">
                 
                 <textarea 
-                    id="primaryInput"
+                    id="input"
                     rows="1" 
                     placeholder="Enter process instruction prompt here..." 
                     class="w-full bg-transparent text-slate-100 placeholder-slate-500 focus:outline-none resize-none text-xs md:text-sm px-2 max-h-32"
+                    onkeypress="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); send(); }"
                 ></textarea>
 
                 <div class="flex items-center justify-between border-t border-slate-800/80 pt-2.5 mt-2 px-1">
-                    <!-- Utility Actions -->
-                    <div class="flex items-center gap-1.5 text-slate-400">
-                        <button id="uploadAttachmentBtn" class="hover:text-indigo-400 p-1.5 hover:bg-slate-800/60 rounded-lg transition-colors" title="Attach Document Element">
-                            <i class="fa-solid fa-paperclip text-xs"></i>
-                        </button>
-                        <button id="webSearchToggleBtn" class="hover:text-indigo-400 p-1.5 hover:bg-slate-800/60 rounded-lg transition-colors" title="Toggle Network Connection">
-                            <i class="fa-solid fa-network-wired text-xs"></i>
-                        </button>
+                    <div class="flex items-center gap-1.5 text-slate-500 text-[10px]">
+                        <span class="font-mono">Shift + Enter for multi-line</span>
                     </div>
 
-                    <!-- Submission Management -->
                     <div class="flex items-center gap-2">
-                        <span class="text-[10px] text-slate-500 font-mono hidden sm:inline">Press Enter to dispatch</span>
-                        <button id="dispatchPromptBtn" class="bg-indigo-600 hover:bg-indigo-500 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all">
+                        <button onclick="send()" class="bg-indigo-600 hover:bg-indigo-500 text-white w-8 h-8 rounded-lg flex items-center justify-center transition-all">
                             <i class="fa-solid fa-arrow-up text-xs"></i>
                         </button>
                     </div>
@@ -229,258 +195,294 @@
 
             </div>
             <div class="flex justify-between items-center px-1 mt-2 text-[10px] text-slate-600">
-                <span>System Protocol: Verified Secure Execution</span>
-                <span>SmartGPT Enterprise Engine v2.0</span>
+                <span>System Encryption: Dynamic SSL Verification</span>
+                <span>SmartGPT v2.0 Pro Architecture</span>
             </div>
         </div>
 
     </main>
 
-    <!-- CORE FUNCTIONAL LOGIC CONTROLLER -->
     <script>
-        // DOM Nodes Collection
-        const primaryInput = document.getElementById('primaryInput');
-        const dispatchPromptBtn = document.getElementById('dispatchPromptBtn');
-        const welcomeScreen = document.getElementById('welcomeScreen');
-        const conversationStream = document.getElementById('conversationStream');
-        const workspaceArea = document.getElementById('workspaceArea');
-        const newSessionBtn = document.getElementById('newSessionBtn');
-        const clearWorkspaceBtn = document.getElementById('clearWorkspaceBtn');
-        const menuToggleBtn = document.getElementById('menuToggleBtn');
-        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
-        const sidebar = document.getElementById('sidebar');
-        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
-        const suggestionCards = document.querySelectorAll('.suggestion-card');
-        const historyItems = document.querySelectorAll('.history-item');
-        const uploadAttachmentBtn = document.getElementById('uploadAttachmentBtn');
-        const webSearchToggleBtn = document.getElementById('webSearchToggleBtn');
-        const settingsBtn = document.getElementById('settingsBtn');
+        // Google Macro Target Endpoint Config Array
+        const API = "https://script.google.com/macros/s/AKfycbwgsVWUOju0OHwkDQpWss-_0ktI4_2Nmv5KgNxhD69bJKjIomLYoK-fFtFe8p8bxdnD9A/exec";
 
-        // State Machine
-        let conversationIsActive = false;
-        let networkContextActive = false;
+        const chat = document.getElementById("chat");
+        const input = document.getElementById("input");
+        const welcomeScreen = document.getElementById("welcomeScreen");
+        const workspaceArea = document.getElementById("workspaceArea");
 
-        // Auto-Adjusting Input Layout Height
-        function initializeTextareaGrow() {
-            primaryInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = this.scrollHeight + 'px';
+        // Mobile Layout Toggle Elements
+        const sidebar = document.getElementById("sidebar");
+        const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+        const menuToggleBtn = document.getElementById("menuToggleBtn");
+        const closeSidebarBtn = document.getElementById("closeSidebarBtn");
+
+        let chats = JSON.parse(localStorage.getItem("chats")) || [];
+        let currentChat = null;
+
+        // Auto growing height tracker for input element
+        input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Mobile Responsive Toggles
+        if(menuToggleBtn) menuToggleBtn.addEventListener('click', () => { sidebar.classList.remove('-translate-x-full'); sidebarBackdrop.classList.remove('hidden'); });
+        if(closeSidebarBtn) closeSidebarBtn.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); sidebarBackdrop.classList.add('hidden'); });
+        if(sidebarBackdrop) sidebarBackdrop.addEventListener('click', () => { sidebar.classList.add('-translate-x-full'); sidebarBackdrop.classList.add('hidden'); });
+
+        /* ================= MANAGEMENT CORE ================= */
+
+        function newChat() {
+            currentChat = {
+                id: Date.now(),
+                userId: "user_" + Date.now(),
+                messages: []
+            };
+            chats.push(currentChat);
+            saveChats();
+            renderChats();
+            renderMessages();
+            
+            // Mobile Sidebar Auto dismiss after switching views
+            sidebar.classList.add('-translate-x-full');
+            sidebarBackdrop.classList.add('hidden');
+        }
+
+        function saveChats() {
+            localStorage.setItem("chats", JSON.stringify(chats));
+        }
+
+        function renderChats() {
+            const box = document.getElementById("history");
+            box.innerHTML = "";
+
+            chats.forEach(chatItem => {
+                const button = document.createElement("button");
+                // Professional class mapping logic instead of simple div lists
+                const isActive = currentChat && currentChat.id === chatItem.id;
+                button.className = `w-full flex items-center justify-between p-2.5 rounded-xl text-left text-xs transition-all ${
+                    isActive 
+                    ? 'bg-slate-800/60 border border-slate-700/40 text-slate-200' 
+                    : 'hover:bg-slate-800/30 text-slate-400 hover:text-slate-200'
+                }`;
+
+                const truncatedTitle = chatItem.messages[0]?.text || "New Operations Stream";
+                
+                button.innerHTML = `
+                    <div class="flex items-center gap-3 truncate w-full">
+                        <i class="fa-regular fa-message ${isActive ? 'text-indigo-400' : ''} text-[11px] flex-shrink-0"></i>
+                        <span class="truncate pr-1">${truncatedTitle}</span>
+                    </div>
+                `;
+
+                button.onclick = () => {
+                    currentChat = chatItem;
+                    renderChats();
+                    renderMessages();
+                    sidebar.classList.add('-translate-x-full');
+                    sidebarBackdrop.classList.add('hidden');
+                };
+
+                box.appendChild(button);
             });
         }
 
-        // Sidebar Navigation Toggles for Mobile layouts
-        function toggleSidebar(open) {
-            if (open) {
-                sidebar.classList.remove('-translate-x-full');
-                sidebarBackdrop.classList.remove('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
-                sidebarBackdrop.classList.add('hidden');
-            }
-        }
+        function renderMessages() {
+            chat.innerHTML = "";
 
-        // Clear Workspace State
-        function purgeWorkspace() {
-            conversationStream.innerHTML = '';
-            conversationStream.classList.add('hidden');
-            welcomeScreen.classList.remove('hidden');
-            conversationIsActive = false;
-            primaryInput.value = '';
-            primaryInput.style.height = 'auto';
-        }
-
-        // UI Append Utility
-        function appendDialogueBlock(role, messageText) {
-            // Hide welcome screen context if first trigger run
-            if (!conversationIsActive) {
-                welcomeScreen.classList.add('hidden');
-                conversationStream.classList.remove('hidden');
-                conversationIsActive = true;
+            if (!currentChat || currentChat.messages.length === 0) {
+                chat.classList.add('hidden');
+                welcomeScreen.classList.remove('hidden');
+                return;
             }
 
-            const dialogueWrapper = document.createElement('div');
-            dialogueWrapper.className = `flex gap-4 p-4 rounded-xl border ${
-                role === 'user' 
+            welcomeScreen.classList.add('hidden');
+            chat.classList.remove('hidden');
+
+            currentChat.messages.forEach(m => {
+                addMsg(m.text, m.type, false); // Direct load history logs without streaming effects
+            });
+            
+            setTimeout(() => { workspaceArea.scrollTop = workspaceArea.scrollHeight; }, 20);
+        }
+
+        /* ================= DISPLAY CONTROLS ================= */
+
+        function addMsg(text, type, triggerStreamAnimation = false) {
+            welcomeScreen.classList.add('hidden');
+            chat.classList.remove('hidden');
+
+            const dialogueBlock = document.createElement("div");
+            dialogueBlock.className = `flex gap-4 p-4 rounded-xl border ${
+                type === 'user' 
                 ? 'bg-slate-800/20 border-slate-800/40' 
                 : 'bg-[#0f1524]/60 border-slate-800/80'
             }`;
 
-            const entityIcon = document.createElement('div');
-            entityIcon.className = `w-7 h-7 rounded-lg flex items-center justify-center text-xs font-mono font-bold flex-shrink-0 ${
-                role === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-200'
+            const identityIcon = document.createElement('div');
+            identityIcon.className = `w-7 h-7 rounded-lg flex items-center justify-center text-[10px] font-mono font-bold flex-shrink-0 ${
+                type === 'user' ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-200'
             }`;
-            entityIcon.innerHTML = role === 'user' ? 'U' : 'AI';
+            identityIcon.innerHTML = type === 'user' ? 'U' : 'AI';
 
             const payloadContainer = document.createElement('div');
-            payloadContainer.className = "flex-1 space-y-2 text-xs md:text-sm leading-relaxed text-slate-300 select-text";
+            payloadContainer.className = "flex-1 space-y-2 text-xs md:text-sm leading-relaxed text-slate-300 select-text whitespace-pre-wrap";
+
+            dialogueBlock.appendChild(identityIcon);
+            dialogueBlock.appendChild(payloadContainer);
+            chat.appendChild(dialogueBlock);
             
-            if (role === 'user') {
-                payloadContainer.innerText = messageText;
-                dialogueWrapper.appendChild(entityIcon);
-                dialogueWrapper.appendChild(payloadContainer);
-                conversationStream.appendChild(dialogueWrapper);
+            if (type === 'ai' && triggerStreamAnimation) {
+                simulateTypewriter(payloadContainer, text);
             } else {
-                dialogueWrapper.appendChild(entityIcon);
-                dialogueWrapper.appendChild(payloadContainer);
-                conversationStream.appendChild(dialogueWrapper);
-                // Trigger response system stream simulation
-                simulateResponseStream(payloadContainer, messageText);
+                // If it contains code response, safely structure it
+                if(text.includes("```")) {
+                    payloadContainer.innerHTML = formatCodeResponse(text);
+                } else {
+                    payloadContainer.textContent = text;
+                }
             }
 
-            // Smooth scroll anchor focus adjustment
-            setTimeout(() => {
-                workspaceArea.scrollTo({
-                    top: workspaceArea.scrollHeight,
-                    behavior: 'smooth'
-                });
-            }, 50);
+            workspaceArea.scrollTop = workspaceArea.scrollHeight;
         }
 
-        // Mock System Simulation for Response Engine Streaming
-        function simulateResponseStream(targetContainer, textPayload) {
-            let index = 0;
-            targetContainer.innerHTML = ""; // Clean context
+        function showTypingIndicator() {
+            const indicatorBlock = document.createElement("div");
+            indicatorBlock.className = "flex gap-4 p-4 rounded-xl border bg-[#0f1524]/60 border-slate-800/80"
+            indicatorBlock.id = "typingIndicator";
             
-            // Temporary indicator block element
-            const cursorIndicator = document.createElement('span');
-            cursorIndicator.className = "inline-block w-1 h-3.5 bg-indigo-500 ml-0.5 animate-pulse";
-            targetContainer.appendChild(cursorIndicator);
+            indicatorBlock.innerHTML = `
+                <div class="w-7 h-7 rounded-lg bg-slate-700 text-slate-200 flex items-center justify-center text-[10px] font-mono font-bold flex-shrink-0">AI</div>
+                <div class="flex items-center gap-1 py-2">
+                    <span class="typing-dot w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                    <span class="typing-dot w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                    <span class="typing-dot w-1.5 h-1.5 bg-slate-400 rounded-full"></span>
+                </div>
+            `;
+            chat.appendChild(indicatorBlock);
+            workspaceArea.scrollTop = workspaceArea.scrollHeight;
+        }
 
-            const streamInterval = setInterval(() => {
-                if (index < textPayload.length) {
-                    // Check if char sequence structural logic rules apply
-                    if(textPayload.substr(index, 4) === "<pre>") {
-                        const endPre = textPayload.indexOf("</pre>", index);
-                        if(endPre !== -1) {
-                            const preBlockHtml = textPayload.substring(index, endPre + 6);
-                            cursorIndicator.insertAdjacentHTML('beforebegin', preBlockHtml);
-                            index = endPre + 6;
-                            return;
-                        }
-                    }
-                    
-                    cursorIndicator.insertAdjacentText('beforebegin', textPayload.charAt(index));
-                    index++;
-                    
-                    // Progressive scroll tracking focus during response print
-                    if (index % 5 === 0) {
-                        workspaceArea.scrollTop = workspaceArea.scrollHeight;
-                    }
+        function removeTypingIndicator() {
+            const element = document.getElementById("typingIndicator");
+            if (element) element.remove();
+        }
+
+        // Professional Stream Animation setup
+        function simulateTypewriter(target, fullText) {
+            let pointer = 0;
+            target.innerHTML = "";
+            
+            const pipelineCursor = document.createElement('span');
+            pipelineCursor.className = "inline-block w-1 h-3.5 bg-indigo-500 ml-0.5 animate-pulse";
+            target.appendChild(pipelineCursor);
+
+            const timer = setInterval(() => {
+                if (pointer < fullText.length) {
+                    pipelineCursor.insertAdjacentText('beforebegin', fullText.charAt(pointer));
+                    pointer++;
+                    if(pointer % 4 === 0) workspaceArea.scrollTop = workspaceArea.scrollHeight;
                 } else {
-                    clearInterval(streamInterval);
-                    cursorIndicator.remove(); // Safely drop visual indicator line
+                    clearInterval(timer);
+                    pipelineCursor.remove();
+                    // Final markdown re-parsing check once stream terminates
+                    if(fullText.includes("```")) {
+                        target.innerHTML = formatCodeResponse(fullText);
+                    }
                 }
-            }, 8); // Fast operational typing speed execution
+            }, 8);
         }
 
-        // Process Submissions Router
-        function processInstructionDispatch() {
-            const promptValue = primaryInput.value.trim();
-            if (!promptValue) return;
+        // Utility layout tool to structure code arrays cleanly
+        function formatCodeResponse(rawText) {
+            return rawText.replace(/```([\s\S]*?)```/g, function(match, codeSegment) {
+                return `<pre><code>${codeSegment.trim()}</code></pre>`;
+            });
+        }
 
-            // Render User Prompt Instantly
-            appendDialogueBlock('user', promptValue);
-            primaryInput.value = '';
-            primaryInput.style.height = 'auto';
+        /* ================= SEND EXECUTOR SYSTEM ================= */
 
-            // Generate contextual response arrays based on strings matching criteria
-            let simulatedSystemOutput = "Command acknowledged. Processing standard telemetry parameters for evaluation block. Execution trace successfully finished with exit status 0.";
-            
-            if (promptValue.toLowerCase().includes('data') || promptValue.toLowerCase().includes('dataset')) {
-                simulatedSystemOutput = "Dataset analysis initialized.\n\nParsing records... OK\nValidating structural keys... OK\n\nNo conversion anomalies detected. Data schema aligns perfectly with target storage arrays.";
-            } else if (promptValue.toLowerCase().includes('script') || promptValue.toLowerCase().includes('code')) {
-                simulatedSystemOutput = "System compiled clean functional execution block standard script logic:\n<pre>function executeBackupJob() {\n  const systemFolder = DriveApp.getFolderById('TARGET_STORAGE_ID');\n  console.log('Operational sync completed successfully.');\n}</pre>\nDeploy the compiled configuration object block inside your local runner container setup.";
-            } else if (promptValue.toLowerCase().includes('ebook') || promptValue.toLowerCase().includes('format')) {
-                simulatedSystemOutput = "Typography layout optimization parsed successfully:\n- Frontispiece structural header constraints: Applied\n- Section spacing margins configured to uniform global limits.\n- Index link table map generation: Dynamic matrix valid.";
+        async function send() {
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            if (!currentChat) newChat();
+
+            addMsg(msg, "user", false);
+
+            currentChat.messages.push({
+                text: msg,
+                type: "user"
+            });
+
+            input.value = "";
+            input.style.height = 'auto';
+
+            showTypingIndicator();
+
+            try {
+                const url = API + "?msg=" + encodeURIComponent(msg) + "&user=" + currentChat.userId;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                removeTypingIndicator();
+
+                // Dynamic API string routing layout display
+                addMsg(data.reply, "ai", true);
+
+                currentChat.messages.push({
+                    text: data.reply,
+                    type: "ai"
+                });
+
+                saveChats();
+                renderChats();
+
+            } catch (err) {
+                removeTypingIndicator();
+                addMsg("⚠️ Network Engine Exception: Google Script API endpoint unresponsive.", "ai", false);
             }
-
-            // Simulate Network Delay before response streaming starts
-            setTimeout(() => {
-                appendDialogueBlock('ai', simulatedSystemOutput);
-            }, 400);
         }
 
-        // Wiring Core Operational Action Listeners
-        function bindSystemEvents() {
-            // Textarea Action Keys
-            primaryInput.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    processInstructionDispatch();
-                }
-            });
+        /* ================= COMPONENT UTILITIES ================= */
 
-            dispatchPromptBtn.addEventListener('click', processInstructionDispatch);
-
-            // UI Navigation Reset Buttons
-            newSessionBtn.addEventListener('click', () => {
-                purgeWorkspace();
-                toggleSidebar(false);
-            });
-            clearWorkspaceBtn.addEventListener('click', purgeWorkspace);
-
-            // Responsive Sidebar System Actions
-            menuToggleBtn.addEventListener('click', () => toggleSidebar(true));
-            closeSidebarBtn.addEventListener('click', () => toggleSidebar(false));
-            sidebarBackdrop.addEventListener('click', () => toggleSidebar(false));
-
-            // Prompt Template Cards Routing Event Mapping
-            suggestionCards.forEach(card => {
-                card.addEventListener('click', () => {
-                    const inlinePromptText = card.getAttribute('data-prompt');
-                    primaryInput.value = inlinePromptText;
-                    primaryInput.focus();
-                    // Set heights tracking
-                    primaryInput.style.height = 'auto';
-                    primaryInput.style.height = primaryInput.scrollHeight + 'px';
-                });
-            });
-
-            // Active State management for sidebar entries tracking
-            historyItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    historyItems.forEach(i => {
-                        i.classList.remove('bg-slate-800/60', 'border', 'border-slate-700/40');
-                        i.classList.add('hover:bg-slate-800/30', 'text-slate-400');
-                    });
-                    this.classList.add('bg-slate-800/60', 'border', 'border-slate-700/40');
-                    this.classList.remove('hover:bg-slate-800/30', 'text-slate-400');
-                    
-                    // Simulate loading item conversation context logs
-                    purgeWorkspace();
-                    setTimeout(() => {
-                        appendDialogueBlock('user', "Context request retrieval parameter execution string mapping data logic.");
-                        setTimeout(() => {
-                            appendDialogueBlock('ai', "Previous operational logs restored successfully. Enter standard prompt instructions to evaluate active memory.");
-                        }, 300);
-                    }, 150);
-                    toggleSidebar(false);
-                });
-            });
-
-            // Action UI Feedback Event Mocking
-            uploadAttachmentBtn.addEventListener('click', () => alert('System Trigger: Native file attachment target browser container system dialog invoked.'));
-            settingsBtn.addEventListener('click', () => alert('System Notification: Core engine preference matrix settings requested.'));
-            
-            webSearchToggleBtn.addEventListener('click', function() {
-                networkContextActive = !networkContextActive;
-                if(networkContextActive) {
-                    this.classList.remove('text-slate-400');
-                    this.classList.add('text-indigo-400');
-                    alert('Network Context Hook: Global index search execution parameters are now active.');
-                } else {
-                    this.classList.remove('text-indigo-400');
-                    this.classList.add('text-slate-400');
-                    alert('Network Context Hook: Local environment parameters restored.');
-                }
-            });
+        function injectPrompt(text) {
+            input.value = text;
+            input.focus();
+            input.style.height = 'auto';
+            input.style.height = input.scrollHeight + 'px';
         }
 
-        // System Startup Trigger Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeTextareaGrow();
-            bindSystemEvents();
-        });
+        function clearWorkspace() {
+            if(currentChat) {
+                currentChat.messages = [];
+                saveChats();
+                renderChats();
+                renderMessages();
+            }
+        }
+
+        function clearAllData() {
+            if(confirm("Are you sure you want to completely purge local database historical logs?")) {
+                localStorage.removeItem("chats");
+                chats = [];
+                currentChat = null;
+                renderChats();
+                renderMessages();
+            }
+        }
+
+        /* ================= INITIALIZATION SEEDING ================= */
+
+        renderChats();
+
+        if (chats.length) {
+            currentChat = chats[0];
+            renderMessages();
+        }
+
     </script>
 </body>
 </html>
